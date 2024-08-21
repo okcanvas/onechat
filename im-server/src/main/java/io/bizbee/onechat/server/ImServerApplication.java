@@ -1,0 +1,19 @@
+package io.bizbee.onechat.server;
+
+import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+@EnableAspectJAutoProxy(exposeProxy = true)
+@MapperScan(basePackages = {"io.bizbee.onechat.server.mapper"})
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+public class ImServerApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(ImServerApplication.class, args);
+
+  }
+}

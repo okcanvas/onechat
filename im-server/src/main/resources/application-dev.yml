@@ -1,0 +1,61 @@
+server:
+  port: 8888
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://211.45.167.54:3306/onechat?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    username: root
+    password: cellbio0707!
+
+  redis:
+    host: 211.45.167.54
+    port: 54378
+    #database: 1
+    #password: root
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  main:
+    allow-circular-references: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # mapper
+  mapper-locations:
+    - classpath:mappers/*.xml
+minio:
+  endpoint: http://127.0.0.1:9000 #
+  public: http://127.0.0.1:9000  #
+  accessKey: LIogpqrhmjSq0opbXz7T
+  secretKey: iZdz5FF3FakQ2m84mhAgYlid3fStpWoYax32NVI1
+  bucketName: box-im
+  imagePath: image
+  filePath: file
+
+webrtc:
+  iceServers:
+    - urls: stun:stun.l.google.com:19302
+
+
+app:
+  zk:
+    address: localhost:2181
+    path: /onechat/node
+  auth2:
+    loginRedirectUri: http://127.0.0.1:8080/oAuthLoginResult
+    gitee:
+      clientId: 1
+      clientSecret: 1
+      redirectUri: http://localhost:8888/connect/callback/GITEE
+    github:
+      clientId: 1
+      clientSecret: 1
+      redirectUri: http://localhost:8888/connect/callback/GITHUB
+
+swagger:
+  enable: true
+

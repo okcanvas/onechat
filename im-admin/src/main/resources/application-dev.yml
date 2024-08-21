@@ -1,0 +1,16 @@
+server:
+  port: 18888
+spring:
+  redis:
+    host: 211.45.167.54
+    port: 54378
+    #database: 1
+    #password: root
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+
+
+swagger:
+  enable: true
+

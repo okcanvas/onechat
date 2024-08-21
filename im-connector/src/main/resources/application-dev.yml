@@ -1,0 +1,21 @@
+server:
+  port: -1
+
+spring:
+  redis:
+    host: 211.45.167.54
+    port: 54378
+    #database: 1
+    #password: root
+
+app:
+  ip:
+  ws:
+    port: -1
+    enable: true
+  tcp:
+    port: -1
+    enable: true
+  zk:
+    path: /onechat/node
+    address: localhost:2181

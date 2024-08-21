@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.bizbee.onechat.common.core.CoreCommonAutoConfiguration
