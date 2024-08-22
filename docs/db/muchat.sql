@@ -3,12 +3,12 @@
  Source Server Type    : MySQL
  Source Server Version : 
  Source Host           : localhost:3306
- Source Schema         : bizbeeChat
+ Source Schema         : onechat
 */
 create
-database `bizbeeChat` default character set utf8mb4 collate utf8mb4_general_ci;
+database `onechat` default character set utf8mb4 collate utf8mb4_general_ci;
 USE
-bizbeeChat;
+onechat;
 
 SET NAMES utf8mb4;
 SET
@@ -83,8 +83,8 @@ CREATE TABLE `im_group`
 BEGIN;
 INSERT INTO `im_group` (`id`, `name`, `owner_id`, `head_image`, `head_image_thumb`, `notice`,
                         `remark`, `deleted`, `created_time`, `group_type`)
-VALUES (5, '대화방', 1, 'http://127.30.0.1:9000/bizbeeChat/image/20230702/1688284083704.png',
-        'http://127.30.0.1:9000/bizbeeChat/image/20230702/1688284083704.png',
+VALUES (5, '대화방', 1, 'http://127.30.0.1:9000/onechat/image/20230702/1688284083704.png',
+        'http://127.30.0.1:9000/onechat/image/20230702/1688284083704.png',
         '공지사항',
         '특이사항\n',
         0, '2024-08-22 11:43:40', 1);

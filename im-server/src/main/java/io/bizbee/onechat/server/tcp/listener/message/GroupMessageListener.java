@@ -23,14 +23,11 @@ public class GroupMessageListener implements MessageListener {
   public void process(SendResult result) {
     GroupMessageInfo messageInfo = (GroupMessageInfo) result.getMessageInfo();
     if (messageInfo.getType().equals(MessageType.TIP.code())) {
-      // 提示类数据不记录
       return;
     }
 
-    // 保存该用户已拉取的最大消息id
     if (result.getCode().equals(IMSendCode.SUCCESS)) {
-      String key =
-          RedisKey.IM_GROUP_READED_POSITION + messageInfo.getGroupId() + ":" + result.getRecvId();
+      String key = RedisKey.IM_GROUP_READED_POSITION + messageInfo.getGroupId() + ":" + result.getRecvId();
       redisTemplate.opsForValue().set(key, messageInfo.getId());
     }
   }

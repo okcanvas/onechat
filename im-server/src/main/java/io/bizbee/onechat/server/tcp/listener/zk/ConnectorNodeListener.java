@@ -47,9 +47,9 @@ public class ConnectorNodeListener implements ApplicationListener<ApplicationSta
 
     for (NetProtocolEnum protocolEnum : NetProtocolEnum.values()) {
       String zkProtocolPath = buildZkPath(protocolEnum);
-      // 监听变更
+      // 
       childrenCacheListener(zkProtocolPath, protocolEnum);
-      // 主动拉取一遍最新数据
+      // 
       // List<String> paths = client.getChildren().forPath(zkProtocolPath);
       // if(CollUtil.isEmpty(paths)){
       // continue;
@@ -129,9 +129,8 @@ public class ConnectorNodeListener implements ApplicationListener<ApplicationSta
       return;
     }
     nodeContainer.remove(netProtocolEnum, node);
-    log.info("机器下线成功：{}", node);
+    log.info("장치제거성공：{}", node);
 
-    // 发布事件
     if (CollUtil.isNotEmpty(nodeUpdateNodeEventListeners)) {
       nodeUpdateNodeEventListeners.forEach(e -> {
         e.delete(netProtocolEnum, node);
@@ -145,9 +144,8 @@ public class ConnectorNodeListener implements ApplicationListener<ApplicationSta
       return;
     }
     nodeContainer.add(netProtocolEnum, nodes);
-    log.info("新的机器上线成功：{}", nodes);
+    log.info("장치추가성공：{}", nodes);
 
-    // 发布事件
     if (CollUtil.isNotEmpty(nodeUpdateNodeEventListeners)) {
       nodeUpdateNodeEventListeners.forEach(e -> {
         e.add(netProtocolEnum, nodes);

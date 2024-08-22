@@ -5,25 +5,25 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel("群成员信息VO")
+@ApiModel("")
 public class GroupMemberResp {
 
-  @ApiModelProperty("用户id")
+  @ApiModelProperty("")
   private Long userId;
 
-  @ApiModelProperty("群内显示名称")
+  @ApiModelProperty("")
   private String aliasName;
 
-  @ApiModelProperty("头像")
+  @ApiModelProperty("")
   private String headImage;
 
-  @ApiModelProperty("是否已退出")
+  @ApiModelProperty("")
   private Boolean quit;
 
-  @ApiModelProperty("备注")
+  @ApiModelProperty("")
   private String remark;
 
-  @ApiModelProperty(value = "ip地址")
+  @ApiModelProperty(value = "")
   private String ipAddress;
 
   private Boolean onlineState;

@@ -7,7 +7,7 @@ public interface UserEnum {
   @Getter
   enum AccountType {
 
-    Plain(0, "正常"), Anonymous(1, "匿名"),
+    Plain(0, "정상"), Anonymous(1, "익명"),
     ;
 
     private Integer code;

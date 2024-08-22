@@ -2,6 +2,8 @@ server:
   port: 18888
 spring:
   redis:
+    #host: 127.0.0.1
+    #port: 6379
     host: 211.45.167.54
     port: 54378
     #database: 1

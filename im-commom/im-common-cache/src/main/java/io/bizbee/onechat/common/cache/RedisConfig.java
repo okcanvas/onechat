@@ -31,7 +31,7 @@ public class RedisConfig {
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setHashKeySerializer(new StringRedisSerializer());
     redisTemplate.afterPropertiesSet();
-    log.info("cache redis初始化");
+    log.info("cache redis 초기화");
     return redisTemplate;
   }
 

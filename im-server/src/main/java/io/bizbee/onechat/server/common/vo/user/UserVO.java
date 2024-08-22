@@ -9,43 +9,43 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-@ApiModel("用户信息VO")
+@ApiModel("VO")
 public class UserVO {
 
-  @NotNull(message = "用户id不能为空")
-  @ApiModelProperty(value = "id")
+  @NotNull(message = "")
+  @ApiModelProperty(value = "")
   private Long id;
 
-  @NotEmpty(message = "用户名不能为空")
-  @Length(max = 64, message = "用户名不能大于64字符")
-  @ApiModelProperty(value = "用户名")
+  @NotEmpty(message = "")
+  @Length(max = 64, message = "")
+  @ApiModelProperty(value = "")
   private String userName;
 
-  @NotEmpty(message = "用户昵称不能为空")
-  @Length(max = 64, message = "昵称不能大于64字符")
-  @ApiModelProperty(value = "用户昵称")
+  @NotEmpty(message = "")
+  @Length(max = 64, message = "")
+  @ApiModelProperty(value = "")
   private String nickName;
 
-  @ApiModelProperty(value = "性别")
+  @ApiModelProperty(value = "")
   private Integer sex;
 
-  @Length(max = 64, message = "个性签名不能大于1024个字符")
-  @ApiModelProperty(value = "个性签名")
+  @Length(max = 64, message = "")
+  @ApiModelProperty(value = "")
   private String signature;
 
-  @ApiModelProperty(value = "头像")
+  @ApiModelProperty(value = "")
   private String headImage;
 
-  @ApiModelProperty(value = "头像缩略图")
+  @ApiModelProperty(value = "")
   private String headImageThumb;
 
-  @ApiModelProperty(value = "是否在线")
+  @ApiModelProperty(value = "")
   private Boolean online;
 
-  @ApiModelProperty(value = "账号类型:0正常，1匿名")
+  @ApiModelProperty(value = "")
   private Integer accountType;
 
-  @ApiModelProperty(value = "ip地址")
+  @ApiModelProperty(value = "")
   private String ipAddress;
 
 }

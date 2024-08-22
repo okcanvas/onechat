@@ -69,21 +69,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
   @Autowired
   private AppCache appCache;
 
-  /**
-   * 用户登录
-   *
-   * @param dto 登录dto
-   * @return
-   */
-
   @Override
   public LoginResp login(LoginReq dto) {
     User user = findUserByName(dto.getUserName());
     if (null == user) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "用户不存在");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
     if (UserEnum.AccountType.Anonymous.equals(user.getAccountType())) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "用户不存在");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
     if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
       throw new GlobalException(ResultCode.PASSWOR_ERROR);
@@ -110,16 +103,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     return vo;
   }
 
-  /**
-   * 用refreshToken换取新 token
-   *
-   * @param refreshToken
-   * @return
-   */
+  
   @Override
   public LoginResp refreshToken(String refreshToken) {
     try {
-      // 验证 token
+      
       JwtUtil.checkSign(refreshToken, AppConst.REFRESH_TOKEN_SECRET);
       String strJson = JwtUtil.getInfo(refreshToken);
       Long userId = JwtUtil.getUserId(refreshToken);
@@ -134,16 +122,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
       vo.setRefreshTokenExpiresIn(AppConst.REFRESH_TOKEN_EXPIRE);
       return vo;
     } catch (JWTVerificationException e) {
-      throw new GlobalException("refreshToken已失效");
+      throw new GlobalException("refreshToken");
     }
   }
 
-  /**
-   * 用户注册
-   *
-   * @param dto 注册dto
-   * @return
-   */
   @Override
   public void register(RegisterReq dto) {
     String userName = dto.getUserName();
@@ -154,33 +136,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
     user = BeanUtils.copyProperties(dto, User.class);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setSignature("我就是我，不一样的烟火");
+    user.setSignature("");
     this.save(user);
-    log.info("注册用户，用户id:{},用户名:{},昵称:{}", user.getId(), dto.getUserName(),
-        dto.getNickName());
+    log.info("id:{},{},{}", user.getId(), dto.getUserName(), dto.getNickName());
   }
 
   private void validUserName(String userName) {
     if (StrUtil.isBlank(userName)) {
-      throw new BusinessException("用户名不能为空");
+      throw new BusinessException("이름이 비어있다");
     }
     userName = userName.trim();
-    if (userName.indexOf("匿名") == 0) {
-      throw new BusinessException("用户名不可用");
+    if (userName.indexOf("익명") == 0) {
+      throw new BusinessException("사용할수 없는 키워드가 포함되었다");
     }
     for (UserEnum.RegisterRromEnum e : UserEnum.RegisterRromEnum.values()) {
       if (userName.indexOf(e.getMsg()) == 0) {
-        throw new BusinessException("用户名不可用");
+        throw new BusinessException("이 이름은 사용할 수 없다");
       }
     }
   }
 
-  /**
-   * 根据用户名查询用户
-   *
-   * @param username 用户名
-   * @return
-   */
   @Override
   public User findUserByName(String username) {
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -188,24 +163,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     return this.getOne(queryWrapper);
   }
 
-  /**
-   * 更新用户信息，好友昵称和群聊昵称等冗余信息也会更新
-   *
-   * @param vo 用户信息vo
-   * @return
-   */
   @Transactional
   @Override
   public void update(UserVO vo) {
     SessionContext.UserSessionInfo session = SessionContext.getSession();
     if (!session.getId().equals(vo.getId())) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "不允许修改其他用户的信息!");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "Modification of other users' information is not allowed!");
     }
     User user = this.getById(vo.getId());
     if (null == user) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "用户不存在");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "User does not exist");
     }
-    // 更新好友昵称和头像
     if (!user.getNickName().equals(vo.getNickName()) || !user.getHeadImageThumb()
         .equals(vo.getHeadImageThumb())) {
       QueryWrapper<Friend> queryWrapper = new QueryWrapper<>();
@@ -217,7 +185,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
       }
       friendService.updateBatchById(friends);
     }
-    // 更新群聊中的头像
     if (!user.getHeadImageThumb().equals(vo.getHeadImageThumb())) {
       List<GroupMember> members = groupMemberService.findByUserId(session.getId());
       for (GroupMember member : members) {
@@ -225,22 +192,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
       }
       groupMemberService.updateBatchById(members);
     }
-    // 更新用户信息
     user.setNickName(vo.getNickName());
     user.setSex(vo.getSex());
     user.setSignature(vo.getSignature());
     user.setHeadImage(vo.getHeadImage());
     user.setHeadImageThumb(vo.getHeadImageThumb());
     this.updateById(user);
-    log.info("用户信息更新，用户:{}}", user.toString());
+    log.info("{}", user.toString());
   }
 
-  /**
-   * 根据用户昵称查询用户，最多返回20条数据
-   *
-   * @param nickname 用户昵称
-   * @return
-   */
   @Override
   public List<UserVO> findUserByNickName(String nickname) {
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -257,12 +217,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     return vos;
   }
 
-  /**
-   * 判断用户是否在线，返回在线的用户id列表
-   *
-   * @param userIds 用户id，多个用‘,’分割
-   * @return
-   */
   @Override
   public List<Long> checkOnline(String userIds) {
     String[] idArr = userIds.split(",");
@@ -309,8 +263,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     user.setLastLoginIp(IpUtil.getIpAddr(SessionContext.getRequest()));
     this.saveOrUpdate(user);
 
-    // 生成登录信息
-    log.info("oauthLogin，用户:{}", user);
+    log.info("oauthLogin :{}", user);
     return buildLoginResp(user);
   }
 
@@ -319,11 +272,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     User user = lambdaQuery().eq(User::getAnonymouId, req.getAnonymouId()).one();
     boolean newUserFlag = false;
     if (user == null) {
-      // 注册
       user = new User();
       user.setAnonymouId(req.getAnonymouId());
       String generatorId = IdUtils.generatorId();
-      String name = "匿名-" + appCache.incr(CachePrefix.ANONYMOUS_USER_NICK_NAME.name());
+      String name = "익명-" + appCache.incr(CachePrefix.ANONYMOUS_USER_NICK_NAME.name());
       user.setUserName(generatorId);
       user.setNickName(name);
       user.setAccountType(UserEnum.AccountType.Anonymous.getCode());
@@ -339,7 +291,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     this.saveOrUpdate(user);
 
     if (newUserFlag) {
-      // 初始化逻辑
       this.anonyUserInit(user);
     }
     return buildLoginResp(user);
@@ -354,7 +305,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
   }
 
   private void anonyUserInit(User user) {
-    // 查询出所有匿名群聊
     List<Group> groupList = iGroupService.findByGroupType(GroupEnum.GroupType.Anonymous.getCode());
     if (CollUtil.isEmpty(groupList)) {
       return;

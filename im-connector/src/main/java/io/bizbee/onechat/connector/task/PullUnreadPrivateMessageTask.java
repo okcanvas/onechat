@@ -14,7 +14,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class PullUnreadPrivateMessageTask extends AbstractPullMessageTask {
-
   @Autowired
   private AppCache appCache;
 

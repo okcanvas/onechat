@@ -9,41 +9,41 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-@ApiModel("群信息VO")
+@ApiModel("VO")
 public class GroupVO {
 
-  @NotNull(message = "群id不可为空")
-  @ApiModelProperty(value = "群id")
+  @NotNull(message = "")
+  @ApiModelProperty(value = "id")
   private Long id;
 
-  @Length(max = 20, message = "群名称长度不能大于20")
-  @NotEmpty(message = "群名称不可为空")
-  @ApiModelProperty(value = "群名称")
+  @Length(max = 20, message = "")
+  @NotEmpty(message = "")
+  @ApiModelProperty(value = "")
   private String name;
 
-  @NotNull(message = "群主id不可为空")
-  @ApiModelProperty(value = "群主id")
+  @NotNull(message = "")
+  @ApiModelProperty(value = "")
   private Long ownerId;
 
-  @ApiModelProperty(value = "头像")
+  @ApiModelProperty(value = "")
   private String headImage;
 
-  @ApiModelProperty(value = "头像缩略图")
+  @ApiModelProperty(value = "")
   private String headImageThumb;
 
-  @Length(max = 1024, message = "群聊显示长度不能大于1024")
-  @ApiModelProperty(value = "群公告")
+  @Length(max = 1024, message = "")
+  @ApiModelProperty(value = "")
   private String notice;
 
-  @Length(max = 20, message = "群聊显示长度不能大于20")
-  @ApiModelProperty(value = "用户在群显示昵称")
+  @Length(max = 20, message = "")
+  @ApiModelProperty(value = "")
   private String aliasName;
 
-  @Length(max = 20, message = "群聊显示长度不能大于20")
+  @Length(max = 20, message = "")
 
   private String remark;
 
-  @ApiModelProperty(value = "群类型：0普通，1匿名")
+  @ApiModelProperty(value = "0정상,1익명")
   private Integer groupType;
 
   /**

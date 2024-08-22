@@ -16,6 +16,8 @@ public class ConnectorNodeController {
   public String info(Model model) {
     ServerInfoVo serverInfo = new ServerInfoVo();
 
+    System.out.println(serverInfo);
+
     // List<ServerConnectionInfoItemVo> items = new ArrayList<>();
     // for(String l:AppConst.TCP_NODES){
     // ServerConnectionInfoItemVo vo = new ServerConnectionInfoItemVo();

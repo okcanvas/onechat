@@ -41,85 +41,61 @@ public class PrivateMessageServiceImpl extends
   @Autowired
   private IMClient imClient;
 
-  /**
-   * 默认一次查询多少条消息
-   */
   private final static Integer defaultQueryMessageCount = 15;
 
   @Autowired
   private SensitiveWordAdapter sensitiveWordAdapter;
 
-  /**
-   * 发送私聊消息
-   *
-   * @param vo 私聊消息vo
-   * @return 消息id
-   */
   @Override
   public MessageSendResp sendMessage(PrivateMessageSendReq vo) {
     Long userId = SessionContext.getSession().getId();
     Boolean isFriends = friendService.isFriend(userId, vo.getRecvId());
     if (!isFriends) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "您已不是对方好友，无法发送消息");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "친구를 찾을 수 없음");
     }
     String replaced = sensitiveWordAdapter.replace(vo.getContent());
     if (replaced.matches("^\\*+$")) {
-      throw new GlobalException("不允许发送该消息内容");
+      throw new GlobalException("보낼수 없는 메세지");
     }
     vo.setContent(replaced);
 
-    // 保存消息
     PrivateMessage msg = BeanUtils.copyProperties(vo, PrivateMessage.class);
     msg.setSendId(userId);
     msg.setStatus(MessageStatus.UNREAD.code());
     msg.setSendTime(new Date());
     this.save(msg);
-    // 推送消息
+
     PrivateMessageInfo msgInfo = BeanUtils.copyProperties(msg, PrivateMessageInfo.class);
     imClient.sendPrivateMessage(vo.getRecvId(), msgInfo);
-    log.info("发送私聊消息，发送id:{},接收id:{}，内容:{}", userId, vo.getRecvId(), vo.getContent());
+    log.info("sendMessage id:{} friendId:{} content:{}", userId, vo.getRecvId(), vo.getContent());
     return MessageSendResp.builder().id(msg.getId()).content(msg.getContent()).build();
   }
 
-  /**
-   * 撤回消息
-   *
-   * @param id 消息id
-   */
   @Override
   public void recallMessage(Long id) {
     Long userId = SessionContext.getSession().getId();
     PrivateMessage msg = this.getById(id);
     if (msg == null) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "消息不存在");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
     if (msg.getSendId() != userId) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "这条消息不是由您发送,无法撤回");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
     if (System.currentTimeMillis() - msg.getSendTime().getTime()
         > AppConst.ALLOW_RECALL_SECOND * 1000) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "消息已发送超过5分钟，无法撤回");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
-    // 修改消息状态
     msg.setStatus(MessageStatus.RECALL.code());
     this.updateById(msg);
-    // 推送消息
+
     PrivateMessageInfo msgInfo = BeanUtils.copyProperties(msg, PrivateMessageInfo.class);
     msgInfo.setType(MessageType.TIP.code());
     msgInfo.setSendTime(new Date());
-    msgInfo.setContent("对方撤回了一条消息");
+    msgInfo.setContent("취소됨");
     imClient.sendPrivateMessage(msgInfo.getRecvId(), msgInfo);
-    log.info("撤回私聊消息，发送id:{},接收id:{}，内容:{}", msg.getSendId(), msg.getRecvId(),
-        msg.getContent());
+    log.info("recallMessage id:{}, friendId:{}，content:{}", msg.getSendId(), msg.getRecvId(), msg.getContent());
   }
 
-  /**
-   * 拉取历史聊天记录
-   *
-   * @param friendId      好友id
-   * @param lastMessageId 最后一条消息id
-   * @return 聊天记录列表
-   */
   @Override
   public List<PrivateMessageInfo> findHistoryMessage(Long friendId, Long lastMessageId) {
     Long userId = SessionContext.getSession().getId();
@@ -143,40 +119,31 @@ public class PrivateMessageServiceImpl extends
       return info;
     }).collect(Collectors.toList());
 
-    log.info("拉取聊天记录，用户id:{},好友id:{}，数量:{}", userId, friendId, messageInfos.size());
+    log.info("findHistoryMessage id:{} friendId:{} message:{}", userId, friendId, messageInfos.size());
     return messageInfos;
   }
 
-  /**
-   * 异步拉取私聊消息，通过websocket异步推送
-   *
-   * @return
-   */
   @Override
   public void pullUnreadMessage() {
-    // 获取当前连接的channelId
     Long userId = SessionContext.getSession().getId();
     String key = RedisKey.IM_USER_SERVER_ID + userId;
     Integer serverId = (Integer) redisTemplate.opsForValue().get(key);
     if (serverId == null) {
-      throw new GlobalException(ResultCode.PROGRAM_ERROR, "用户未建立连接");
+      throw new GlobalException(ResultCode.PROGRAM_ERROR, "");
     }
-    // 获取当前用户所有未读消息
     QueryWrapper<PrivateMessage> queryWrapper = new QueryWrapper<>();
     queryWrapper.lambda().eq(PrivateMessage::getRecvId, userId)
         .eq(PrivateMessage::getStatus, MessageStatus.UNREAD);
     List<PrivateMessage> messages = this.list(queryWrapper);
-    // 上传至redis，等待推送
     if (!messages.isEmpty()) {
       List<PrivateMessageInfo> messageInfos = messages.stream().map(m -> {
         PrivateMessageInfo msgInfo = BeanUtils.copyProperties(m, PrivateMessageInfo.class);
         return msgInfo;
       }).collect(Collectors.toList());
-      // 推送消息
       PrivateMessageInfo[] infoArr = messageInfos.toArray(
           new PrivateMessageInfo[messageInfos.size()]);
       imClient.sendPrivateMessage(userId, infoArr);
-      log.info("拉取未读私聊消息，用户id:{},数量:{}", userId, infoArr.length);
+      log.info("pullUnreadMessage id:{},count:{}", userId, infoArr.length);
     }
   }
 }
